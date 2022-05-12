@@ -1,7 +1,4 @@
-import BreadCrumb from "./Nav.js"
-import Nodes from "./Nodes.js"
-import Modal from "./Modal.js"
-import Loading from "./Loading.js"
+
 
 export default function Loading({ $target }) {
     this.$element = document.createElement('div');
@@ -24,6 +21,7 @@ export default function Loading({ $target }) {
     this.render = () => {
         
     }
+    this.render();
 
 }
 // <!--
