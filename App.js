@@ -14,6 +14,7 @@ export default function App({ $target }) {
     nodeList: [],
     display: false,
     selectedFilePath: -1,
+    cache: {},
   };
 
   const renewData = async (id) => {
@@ -26,12 +27,12 @@ export default function App({ $target }) {
 
   // 캐시 처리
   const processCache = async (id) => {
-    const { dirs, nodeList } = this.state;
+    const { dirs, nodeList, cache } = this.state;
     const key = dirs.length > 0 ? dirs[dirs.length - 1] : null;
-    let cached = JSON.parse(localStorage.getItem(key));
+    let cached = cache[key];
     if (!cached) {
       cached = await getData(id);
-      localStorage.setItem(key, JSON.stringify(cached));
+      cache[key] = cached;
     }
     this.setState({ nodeList: cached });
   };
@@ -40,6 +41,14 @@ export default function App({ $target }) {
   const nav = new BreadCrumb({
     $target,
     initialState: { dirs: this.state.dirs },
+    onClick: (dir) => {
+      const { dirs } = this.state;
+      const index = dirs.indexOf(dir);
+      if (index !== dirs.length - 1) {
+        this.setState({ dirs: dirs.slice(0, index + 1) });
+        renewData();
+      }
+    },
   });
   const nodes = new Nodes({
     $target,

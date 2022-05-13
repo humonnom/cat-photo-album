@@ -32,7 +32,6 @@ export default function Modal({ $target, initialState, onClose }) {
     if (display && selectedFilePath) {
       this.$element.style.display = "block";
       const imgSrc = `https://fe-dev-matching-2021-03-serverlessdeploymentbuck-t3kpj3way537.s3.ap-northeast-2.amazonaws.com/public${selectedFilePath}`;
-      console.log(imgSrc);
       this.$element.innerHTML = `
                 <div class="content">
                     <img src=${imgSrc}>
