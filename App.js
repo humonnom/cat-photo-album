@@ -7,40 +7,20 @@ import { getData } from "./api.js";
 export default function App({ $target }) {
   const DIR = "DIRECTORY";
   const FILE = "FILE";
-  console.log($target);
-
-// // api test
-// const requestData = async () => {
-//   const data = await getData();
-//   console.log(await data);
-// }
-
-requestData();
   this.state = {
     dirs: ["root"],
     pageId: -1,
-    nodeList: [
-      {
-        id: "5",
-        name: "2021/04",
-        type: "DIRECTORY",
-        filePath: null,
-        parent: {
-          id: "1",
-        },
-      },
-      {
-        id: "19",
-        name: "물 마시는 사진",
-        type: "FILE",
-        filePath: "/images/a2i.jpg",
-        parent: {
-          id: "1",
-        },
-      },
-    ],
-    modalOn: false,
+    nodeList: [],
+    display: false,
     selectedFilePath: -1,
+  };
+
+  const renewData = async (id) => {
+    loading.setState({ display: true });
+    const data = await getData(id);
+    console.log(data);
+    this.setState({ nodeList: data });
+    loading.setState({ display: false });
   };
 
   // 컴포넌트 생성
@@ -57,12 +37,11 @@ requestData();
     onClick: (node) => {
       const { dirs } = this.state;
       if (node.type === DIR) {
-        console.log("라우트 처리");
         dirs.push(node.name);
         this.setState({ dirs });
+        renewData(node.id);
       } else {
-        console.log("사진 모달 처리");
-        this.setState({ modalOn: true });
+        this.setState({ display: true });
         this.setState({ selectedFilePath: node.filePath });
       }
     },
@@ -80,8 +59,16 @@ requestData();
       display: false,
       selectedFilePath: "",
     },
+    onClose: () => {
+      this.setState({ display: false });
+    },
   });
-  //  const loading = new Loading({$target});
+  const loading = new Loading({
+    $target,
+    initialState: {
+      display: true,
+    },
+  });
 
   this.setState = (nextState) => {
     this.state = {
@@ -96,8 +83,9 @@ requestData();
       isRoot: this.state.dirs.length <= 1,
     });
     modal.setState({
-      display: this.state.modalOn,
+      display: this.state.display,
       selectedFilePath: this.state.selectedFilePath,
     });
   };
+  renewData();
 }

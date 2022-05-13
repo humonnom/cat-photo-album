@@ -34,7 +34,6 @@ export default function Nodes({ $target, initialState, onClick, goBack }) {
       const contents = `
             ${nodeList
               .map((node) => {
-                console.log(node.id);
                 const imgSrc =
                   node.type === "DIRECTORY"
                     ? "./assets/directory.png"
