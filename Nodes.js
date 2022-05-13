@@ -30,7 +30,7 @@ export default function Nodes({ $target, initialState, onClick, goBack }) {
 
   this.render = () => {
     const { nodeList, isRoot } = this.state;
-    if (nodeList && nodeList.length > 0) {
+    if (nodeList) {
       const contents = `
             ${nodeList
               .map((node) => {

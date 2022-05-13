@@ -28,3 +28,5 @@ export default function BreadCrumb({ $target, initialState }) {
 
   this.render();
 }
+
+//TODO:  렌더링 된 경로 목록의 특정 아이템을 클릭하면, 해당 경로로 이동하도록 처리합니다.
