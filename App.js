@@ -3,7 +3,6 @@ import Nodes from "./Nodes.js";
 import Modal from "./Modal.js";
 import Loading from "./Loading.js";
 import { getData } from "./api.js";
-import { disableAllActions, preventAction } from "./utils.js";
 
 export default function App({ $target }) {
   const DIR = "DIRECTORY";
@@ -19,10 +18,8 @@ export default function App({ $target }) {
 
   const renewData = async (id) => {
     loading.setState({ display: true });
-    disableAllActions("click", true);
     await processCache(id);
     loading.setState({ display: false });
-    disableAllActions("click", false);
   };
 
   // 캐시 처리
