@@ -2,12 +2,20 @@ import BreadCrumb from "./Nav.js";
 import Nodes from "./Nodes.js";
 import Modal from "./Modal.js";
 import Loading from "./Loading.js";
+import { getData } from "./api.js";
 
 export default function App({ $target }) {
   const DIR = "DIRECTORY";
   const FILE = "FILE";
   console.log($target);
 
+// // api test
+// const requestData = async () => {
+//   const data = await getData();
+//   console.log(await data);
+// }
+
+requestData();
   this.state = {
     dirs: ["root"],
     pageId: -1,
@@ -34,10 +42,6 @@ export default function App({ $target }) {
     modalOn: false,
     selectedFilePath: -1,
   };
-
-  // const goBack = () => {
-
-  // }
 
   // 컴포넌트 생성
   const nav = new BreadCrumb({
