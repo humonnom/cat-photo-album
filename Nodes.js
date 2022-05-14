@@ -13,19 +13,13 @@ export default function Nodes({ $target, initialState, onClick, goBack }) {
     this.render();
   };
 
-  //event
-  const setEvent = () => {
+  const handleClick = ({ target }) => {
     const { nodeList } = this.state;
-    const $nodeElements = this.$element.querySelectorAll(".Node");
-    if ($nodeElements && $nodeElements.length > 0) {
-      $nodeElements.forEach(($node) => {
-        $node.onclick = (e) => {
-          const { nodeId, type } = $node.dataset;
-          if (type === "backButton") goBack();
-          else if (nodeId) onClick(nodeList.find((node) => node.id === nodeId));
-        };
-      });
-    }
+    const node = target.closest(".Node");
+    if (!node) return;
+    const { nodeId, type } = node.dataset;
+    if (type === "backButton") goBack();
+    else if (nodeId) onClick(nodeList.find((node) => node.id === nodeId));
   };
 
   this.render = () => {
@@ -56,7 +50,7 @@ export default function Nodes({ $target, initialState, onClick, goBack }) {
         : "";
       this.$element.innerHTML = backButton + contents;
     }
-    setEvent();
   };
+  this.$element.addEventListener("click", handleClick);
   this.render();
 }

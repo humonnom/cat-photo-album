@@ -13,7 +13,6 @@ export default function Modal({ $target, initialState, onClose }) {
     this.render();
   };
 
-  //event
   const setEvent = () => {
     window.addEventListener("keyup", ({ key }) => {
       if (key === "Escape") onClose();
@@ -28,8 +27,8 @@ export default function Modal({ $target, initialState, onClose }) {
   };
 
   this.render = () => {
-    const { display, selectedFilePath } = this.state;
-    if (display && selectedFilePath) {
+    const { imgModalOn, selectedFilePath } = this.state;
+    if (imgModalOn && selectedFilePath) {
       this.$element.style.display = "block";
       const imgSrc = `https://fe-dev-matching-2021-03-serverlessdeploymentbuck-t3kpj3way537.s3.ap-northeast-2.amazonaws.com/public${selectedFilePath}`;
       this.$element.innerHTML = `
@@ -40,9 +39,9 @@ export default function Modal({ $target, initialState, onClose }) {
     } else {
       this.$element.style.display = "none";
     }
-    setEvent();
   };
   this.render();
+  setEvent();
 }
 {
   /* <div class="Modal ImageViewer">

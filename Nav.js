@@ -7,7 +7,11 @@ export default function BreadCrumb({ $target, initialState, onClick }) {
 
   const setEvent = () => {
     this.$element.addEventListener("click", ({ target }) => {
-      if (target.matches(".Breadcrumb > div")) onClick(target.dataset.dir);
+      if (target.matches(".Breadcrumb > div"))
+        onClick({
+          id: target.dataset.id,
+          label: target.dataset.label,
+        });
     });
   };
 
@@ -20,12 +24,12 @@ export default function BreadCrumb({ $target, initialState, onClick }) {
   };
 
   this.render = () => {
-    const { dirs } = this.state;
-    if (dirs && dirs.length > 0) {
+    const { dirList } = this.state;
+    if (dirList && dirList.length > 0) {
       this.$element.innerHTML = `
-                ${dirs
+                ${dirList
                   .map((dir) => {
-                    return `<div data-dir="${dir}">${dir}</div>`;
+                    return `<div data-id="${dir.id}" data-label="${dir.label}">${dir.label}</div>`;
                   })
                   .join("")}
             `;

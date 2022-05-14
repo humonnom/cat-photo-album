@@ -6,13 +6,16 @@ import { getData } from "./api.js";
 
 export default function App({ $target }) {
   const DIR = "DIRECTORY";
-  const FILE = "FILE";
   this.state = {
-    dirs: ["root"],
-    pageId: -1,
+    dirList: [
+      {
+        label: "root",
+        id: "root",
+      },
+    ],
     nodeList: [],
-    display: false,
-    selectedFilePath: -1,
+    imgModalOn: false,
+    selectedFilePath: "",
     cache: {},
   };
 
@@ -24,12 +27,11 @@ export default function App({ $target }) {
 
   // 캐시 처리
   const processCache = async (id) => {
-    const { dirs, nodeList, cache } = this.state;
-    const key = dirs.length > 0 ? dirs[dirs.length - 1] : null;
-    let cached = cache[key];
+    const { dirList, nodeList, cache } = this.state;
+    let cached = cache[id];
     if (!cached) {
-      cached = await getData(id);
-      cache[key] = cached;
+      cached = await getData(id === "root" ? null : id);
+      cache[id] = cached;
     }
     this.setState({ nodeList: cached });
   };
@@ -37,13 +39,20 @@ export default function App({ $target }) {
   // 컴포넌트 생성
   const nav = new BreadCrumb({
     $target,
-    initialState: { dirs: this.state.dirs },
-    onClick: (dir) => {
-      const { dirs } = this.state;
-      const index = dirs.indexOf(dir);
-      if (index !== dirs.length - 1) {
-        this.setState({ dirs: dirs.slice(0, index + 1) });
-        renewData();
+    initialState: { dirList: this.state.dirList },
+    onClick: async ({ id, label }) => {
+      // 리팩토링
+      const { dirList } = this.state;
+      let foundIndex = -1;
+      dirList.forEach((e, index) => {
+        if (e.id === id) {
+          foundIndex = index;
+          return true;
+        }
+      });
+      await renewData(id);
+      if (foundIndex !== -1 && foundIndex !== dirList.length - 1) {
+        this.setState({ dirList: dirList.slice(0, foundIndex + 1) });
       }
     },
   });
@@ -51,36 +60,41 @@ export default function App({ $target }) {
     $target,
     initialState: {
       nodeList: this.state.nodeList,
-      isRoot: this.state.dirs.length <= 1,
+      isRoot: this.state.dirList.length <= 1,
     },
-    onClick: (node) => {
-      const { dirs } = this.state;
+    onClick: async (node) => {
+      const { dirList } = this.state;
       if (node.type === DIR) {
-        dirs.push(node.name);
-        this.setState({ dirs });
-        renewData(node.id);
+        await renewData(node.id);
+        this.setState({
+          dirList: dirList.concat({
+            label: node.name,
+            id: node.id,
+          }),
+        });
       } else {
-        this.setState({ display: true });
-        this.setState({ selectedFilePath: node.filePath });
+        this.setState({
+          imgModalOn: true,
+          selectedFilePath: node.filePath,
+        });
       }
     },
     goBack: () => {
-      const { dirs } = this.state;
-      dirs.pop();
-      this.setState({ dirs });
-      renewData();
+      const { dirList } = this.state;
+      dirList.pop();
+      this.setState({ dirList });
+      renewData(dirList[dirList.length - 1].id);
     },
   });
 
-  //
   const modal = new Modal({
     $target,
     initialState: {
-      display: false,
+      imgModalOn: false,
       selectedFilePath: "",
     },
     onClose: () => {
-      this.setState({ display: false });
+      this.setState({ imgModalOn: false });
     },
   });
   const loading = new Loading({
@@ -95,15 +109,15 @@ export default function App({ $target }) {
       ...this.state,
       ...nextState,
     };
-    nav.setState({ dirs: this.state.dirs });
     nodes.setState({
       nodeList: this.state.nodeList,
-      isRoot: this.state.dirs.length <= 1,
+      isRoot: this.state.dirList.length <= 1,
     });
+    nav.setState({ dirList: this.state.dirList });
     modal.setState({
-      display: this.state.display,
+      imgModalOn: this.state.imgModalOn,
       selectedFilePath: this.state.selectedFilePath,
     });
   };
-  renewData();
+  renewData("root");
 }
